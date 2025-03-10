@@ -7,7 +7,11 @@ import User from "@/models/User"
 
 export const initiate = async (amount, to_username, paymentform) => {
     await connectDb();
-    var instance = new Razorpay({ key_id: process.env.NEXT_PUBLIC_KEY_ID, key_secret: process.env.KEY_SECRET });
+    // fetch the secret of the user who is getting the payment 
+    let user = await User.findOne({ username: to_username })
+    const secret = user.razorpaysecret
+    var instance = new Razorpay({ key_id:user.razorpayid, key_secret: secret });
+
     let options = {
         amount: Number.parseInt(amount),
         currency: "INR",
@@ -18,7 +22,7 @@ export const initiate = async (amount, to_username, paymentform) => {
     // create a payment object which shows a pending payment in the database
     await Payment.create({
         oid: x.id,
-        amount: amount,
+        amount: amount / 100,
         to_user: to_username,
         name: paymentform.name,
         message: paymentform.message,
@@ -35,7 +39,7 @@ export const fetchuser = async (username) => {
 
 export const fetchpayments = async (username) => {
     await connectDb();
-    let p = await Payment.find({ to_user: username }).sort({ amount: -1 }).lean();
+    let p = await Payment.find({ to_user: username, done: true }).sort({ amount: -1 }).lean();
 
     // Convert ObjectId to string manually if needed
     p = p.map(payment => ({
@@ -55,5 +59,5 @@ export const updateProfile = async (data, oldusername) => {
             return { error: "Username already exists" }
         }
     }
-    await User.updateOne({email: ndata.email}, ndata)
+    await User.updateOne({ email: ndata.email }, ndata)
 }

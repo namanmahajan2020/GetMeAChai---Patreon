@@ -3,15 +3,39 @@ import React, { useEffect, useState } from 'react'
 import Script from 'next/script'
 import { useSession } from 'next-auth/react'
 import { fetchpayments, fetchuser, initiate } from '@/actions/useractions'
+import { useSearchParams } from 'next/navigation'
+import { ToastContainer, toast,Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation'
 
 const PaymentPage = ({ username }) => {
+    // const { data: session } = useSession()
     const [paymentform, setPaymentform] = useState({})
     const [currentUser, setcurrentUser] = useState({})
     const [payments, setPayments] = useState([])
-
+    const searchParams=useSearchParams()
+    const router = useRouter()
     useEffect(() => {
         getData()
     }, [])
+
+    useEffect(() => {
+        if(searchParams.get("paymentdone")=="true"){
+        toast('Thanks for your donation!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            });
+        }
+        router.push(`/${username}`)
+    }, [])
+    
 
     const handleChange = (e) => {
         setPaymentform({ ...paymentform, [e.target.name]: e.target.value })
@@ -28,7 +52,7 @@ const PaymentPage = ({ username }) => {
         let orderId = a.id
 
         var options = {
-            "key": process.env.NEXT_PUBLIC_KEY_ID, // Enter the Key ID generated from the Dashboard
+            "key": currentUser.razorpayid, // Enter the Key ID generated from the Dashboard
             "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             "currency": "INR",
             "name": "Get Me A Chai", //your business name
@@ -53,12 +77,25 @@ const PaymentPage = ({ username }) => {
     }
     return (
         <>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
 
-            <div className='cover w-full bg-red-50 relative'>
-                <img className='object-cover w-full h-full' src="https://c10.patreonusercontent.com/4/patreon-media/p/campaign/4842667/452146dcfeb04f38853368f554aadde1/eyJ3IjoxOTIwLCJ3ZSI6MX0%3D/18.gif?token-time=1743724800&amp;token-hash=3jRRjnWnIycOk6k6K03qY-fepaDiVq5PShRw7Y2mnLQ%3D" alt="" />
-                <div className='absolute -bottom-16 right-[46%]'>
-                    <img className='rounded-full border-2 border-white' width={120} height={120} src="https://c.tenor.com/dimT0JAAMb4AAAAC/tenor.gif" alt="cat" />
+            <div className='cover w-full border-b-white border-b-1 relative'>
+                <img className='object-cover w-full h-70' src={currentUser.coverpic} alt="coverpic" />
+                <div className='absolute -bottom-20 right-[46%] border-white overflow-hidden border-2 rounded-full size-32'>
+                    <img className='rounded-full object-cover size-32 ' width={128} height={128} src={currentUser.profilepic} alt="profilepic" />
                 </div>
             </div>
             <div className='info flex justify-center items-center my-18 flex-col gap-2'>
@@ -75,10 +112,11 @@ const PaymentPage = ({ username }) => {
                     <div className="supporters w-1/2 bg-slate-900 rounded-lg text-white p-10">
                         <h2 className='text-2xl font-bold mb-5'>Supporters</h2>
                         <ul className='mx-5 text-sm'>
+                            {payments.length === 0 && <li>No payments yet </li>}
                             {payments.map((p, i) => {
                                 return <li key={i} className='my-4 flex gap-2 items-center'>
                                     <img width={33} src="avatar.gif" alt="user" />
-                                    <span>{p.name} donated <span className='font-bold'>{(p.amount)/100}</span> with a message "{p.message}"</span></li>
+                                    <span>{p.name} donated <span className='font-bold'>{p.amount}</span> with a message "{p.message}"</span></li>
                             })}
                         </ul>
                     </div>
@@ -97,7 +135,7 @@ const PaymentPage = ({ username }) => {
 
 
 
-                            <button onClick={()=>pay(Number.parseInt(paymentform.amount)*100)} type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Pay</button>
+                            <button onClick={() => pay(Number.parseInt(paymentform.amount) * 100)} type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:bg-slate-600 disabled:from-purple-100 " disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4}>Pay</button>
 
                         </div>
                         {/* Or choose from these amounts */}

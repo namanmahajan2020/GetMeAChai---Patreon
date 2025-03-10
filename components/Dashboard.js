@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { fetchuser, updateProfile } from '@/actions/useractions'
+import { ToastContainer, toast,Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = () => {  // Renamed to 'Dashboard'
 
@@ -28,10 +30,33 @@ const Dashboard = () => {  // Renamed to 'Dashboard'
     }
     const handleSubmit = async (e) => {
         let a = await updateProfile(e, session.user.name)
-        alert("profile updated")
+        toast('Profile Updated!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                    });
     }
 
     return (
+        <>
+        <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick={false}
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
         <div className='container mx-auto py-5 '>
             <h1 className='text-center my-5 text-3xl font-bold'>Welcome to your Dashboard</h1>
 
@@ -78,6 +103,7 @@ const Dashboard = () => {  // Renamed to 'Dashboard'
 
             </form>
         </div>
+        </>
     )
 }
 
