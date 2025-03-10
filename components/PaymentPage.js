@@ -1,31 +1,41 @@
 "use client"
-
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Script from 'next/script'
-import { initiate } from '@/actions/useractions'
 import { useSession } from 'next-auth/react'
+import { fetchpayments, fetchuser, initiate } from '@/actions/useractions'
 
 const PaymentPage = ({ username }) => {
     const [paymentform, setPaymentform] = useState({})
+    const [currentUser, setcurrentUser] = useState({})
+    const [payments, setPayments] = useState([])
+
+    useEffect(() => {
+        getData()
+    }, [])
 
     const handleChange = (e) => {
         setPaymentform({ ...paymentform, [e.target.name]: e.target.value })
     }
-
+    const getData = async () => {
+        let u = await fetchuser(username)
+        setcurrentUser(u)
+        let dbpayments = await fetchpayments(username)
+        setPayments(dbpayments)
+    }
     const pay = async (amount) => {
         // Get the order Id
         let a = await initiate(amount, username, paymentform)
         let orderId = a.id
 
         var options = {
-            "key": process.env.KEY_ID, // Enter the Key ID generated from the Dashboard
+            "key": process.env.NEXT_PUBLIC_KEY_ID, // Enter the Key ID generated from the Dashboard
             "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             "currency": "INR",
             "name": "Get Me A Chai", //your business name
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",
             "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            "callback_url": `${process.env.URL}/api/razorpay`,
+            "callback_url": `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
             "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                 "name": "Gaurav Kumar", //your customer's name
                 "email": "gaurav.kumar@example.com",
@@ -56,7 +66,7 @@ const PaymentPage = ({ username }) => {
                     @{username}
                 </div>
                 <div className='text-slate-400'>
-                    Creating Animated art for VTT's
+                    Creating Ani  mated art for VTT's
                 </div>
                 <div className='text-slate-400'>
                     9,719 members . 82 posts . $15,450/release
@@ -65,12 +75,11 @@ const PaymentPage = ({ username }) => {
                     <div className="supporters w-1/2 bg-slate-900 rounded-lg text-white p-10">
                         <h2 className='text-2xl font-bold mb-5'>Supporters</h2>
                         <ul className='mx-5 text-sm'>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
-                            <li className='my-4 flex gap-2 items-center'><img width={33} src="avatar.gif" alt="user" /> <span>Shubham donated <span className='font-bold'>$30</span> with a message "I support you bro. Lots of ❤️"</span></li>
+                            {payments.map((p, i) => {
+                                return <li key={i} className='my-4 flex gap-2 items-center'>
+                                    <img width={33} src="avatar.gif" alt="user" />
+                                    <span>{p.name} donated <span className='font-bold'>{(p.amount)/100}</span> with a message "{p.message}"</span></li>
+                            })}
                         </ul>
                     </div>
                     <div className="makePayment w-1/2 bg-slate-900 rounded-lg text-white p-10">
@@ -88,7 +97,7 @@ const PaymentPage = ({ username }) => {
 
 
 
-                            <button type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Pay</button>
+                            <button onClick={()=>pay(Number.parseInt(paymentform.amount)*100)} type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Pay</button>
 
                         </div>
                         {/* Or choose from these amounts */}
