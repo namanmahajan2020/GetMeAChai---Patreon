@@ -14,7 +14,7 @@ const Login = () => {
     if (session) return null;
     return (
         <div className='text-white py-14 container mx-auto'>
-            <h1 className=' text-center font-bold text-3xl'>Login to Get your fans to support you</h1>
+            <h1 className=' text-center font-bold text-3xl'>Login to Get started</h1>
             <div className="flex flex-col gap-2 min-h-screen p-10 items-center">
 
 

@@ -7,10 +7,11 @@ import { useSearchParams } from 'next/navigation'
 import { ToastContainer, toast,Bounce} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation'
+import { notFound } from "next/navigation";
 
 const PaymentPage = ({ username }) => {
     // const { data: session } = useSession()
-    const [paymentform, setPaymentform] = useState({})
+    const [paymentform, setPaymentform] = useState({name:"",message:"",amount:""})
     const [currentUser, setcurrentUser] = useState({})
     const [payments, setPayments] = useState([])
     const searchParams=useSearchParams()
@@ -94,8 +95,8 @@ const PaymentPage = ({ username }) => {
 
             <div className='cover w-full border-b-white border-b-1 relative'>
                 <img className='object-cover w-full h-70' src={currentUser.coverpic} alt="coverpic" />
-                <div className='absolute -bottom-20 right-[46%] border-white overflow-hidden border-2 rounded-full size-32'>
-                    <img className='rounded-full object-cover size-32 ' width={128} height={128} src={currentUser.profilepic} alt="profilepic" />
+                <div className='absolute -bottom-20 right-[46%] border-white overflow-hidden border-2 rounded-full size-36'>
+                    <img className='rounded-full object-cover size-36 ' width={128} height={128} src={currentUser.profilepic} alt="profilepic" />
                 </div>
             </div>
             <div className='info flex justify-center items-center my-18 flex-col gap-2'>
@@ -103,10 +104,10 @@ const PaymentPage = ({ username }) => {
                     @{username}
                 </div>
                 <div className='text-slate-400'>
-                    Creating Ani  mated art for VTT's
+                    Lets help {username} get a chai!
                 </div>
                 <div className='text-slate-400'>
-                    9,719 members . 82 posts . $15,450/release
+                    {payments.length} Payments .   ₹{payments.reduce((a, b) => a + b.amount, 0)} raised 
                 </div>
                 <div className="payment flex gap-3 w-[80%] mt-11">
                     <div className="supporters w-1/2 bg-slate-900 rounded-lg text-white p-10">
@@ -135,7 +136,7 @@ const PaymentPage = ({ username }) => {
 
 
 
-                            <button onClick={() => pay(Number.parseInt(paymentform.amount) * 100)} type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:bg-slate-600 disabled:from-purple-100 " disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4}>Pay</button>
+                            <button onClick={() => pay(Number.parseInt(paymentform.amount) * 100)} type="button" className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:bg-slate-600 disabled:from-purple-100 " disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4|| paymentform.amount?.length<1}>Pay</button>
 
                         </div>
                         {/* Or choose from these amounts */}

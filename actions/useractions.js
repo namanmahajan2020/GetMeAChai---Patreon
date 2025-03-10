@@ -10,7 +10,7 @@ export const initiate = async (amount, to_username, paymentform) => {
     // fetch the secret of the user who is getting the payment 
     let user = await User.findOne({ username: to_username })
     const secret = user.razorpaysecret
-    var instance = new Razorpay({ key_id:user.razorpayid, key_secret: secret });
+    var instance = new Razorpay({ key_id: user.razorpayid, key_secret: secret });
 
     let options = {
         amount: Number.parseInt(amount),
@@ -58,6 +58,10 @@ export const updateProfile = async (data, oldusername) => {
         if (u) {
             return { error: "Username already exists" }
         }
+        await User.updateOne({ email: ndata.email }, ndata)
+        await Payment.updateMany({ to_user: oldusername }, { to_user: ndata.username })
     }
-    await User.updateOne({ email: ndata.email }, ndata)
+    else {
+        await User.updateOne({ email: ndata.email }, ndata)
+    }
 }
