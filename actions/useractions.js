@@ -36,7 +36,7 @@ export const fetchuser = async (username) => {
 export const fetchpayments = async (username) => {
     await connectDb();
     let p = await Payment.find({ to_user: username }).sort({ amount: -1 }).lean();
-    
+
     // Convert ObjectId to string manually if needed
     p = p.map(payment => ({
         ...payment,
@@ -44,4 +44,16 @@ export const fetchpayments = async (username) => {
     }));
 
     return p;
+}
+
+export const updateProfile = async (data, oldusername) => {
+    await connectDb();
+    let ndata = Object.fromEntries(data)
+    if (oldusername !== ndata.username) {
+        let u = await User.findOne({ username: ndata.username })
+        if (u) {
+            return { error: "Username already exists" }
+        }
+    }
+    await User.updateOne({email: ndata.email}, ndata)
 }
