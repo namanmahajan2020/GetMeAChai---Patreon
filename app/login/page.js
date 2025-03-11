@@ -6,13 +6,16 @@ import { useRouter } from 'next/navigation'
 const Login = () => {
   const { data: session } = useSession()
   const router = useRouter()
+  
+  useEffect(() => {
+    if (session) {
+      router.push('/dashboard')
+    }
+  }, [session, router]) // Runs when session changes
 
   useEffect(() => {
     document.title = "Login - Get Me A Chai" 
     console.log(session)
-    if (session) {
-      router.push('/dashboard')
-    }
   }, [])
 
   return (
