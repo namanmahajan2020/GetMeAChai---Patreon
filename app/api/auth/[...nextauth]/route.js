@@ -8,6 +8,8 @@ import mongoose from "mongoose";
 import connectDb from '@/db/connectDb';
 import User from '@/models/User';
 import Payment from '@/models/Payment';
+ 
+
 export const authoptions =  NextAuth({
     providers: [
       // OAuth authentication providers...
