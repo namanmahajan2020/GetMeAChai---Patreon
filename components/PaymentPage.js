@@ -93,9 +93,9 @@ const PaymentPage = ({ username }) => {
 
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
 
-            <div className='cover w-full border-b-white border-b-1 relative'>
-                <img className='object-cover w-full h-70' src={currentUser.coverpic} alt="coverpic" />
-                <div className='absolute -bottom-20 right-[46%] border-white overflow-hidden border-2 rounded-full size-36'>
+            <div className='cover w-full relative'>
+                <img className='object-cover w-full h-48 md:h-[350] shadow-blue-700 shadow-sm' src={currentUser.coverpic} alt="coverpic" />
+                <div className='absolute -bottom-20 md:right-[46%] right-[38%] border-white overflow-hidden border-2 rounded-full size-36'>
                     <img className='rounded-full object-cover size-36 ' width={128} height={128} src={currentUser.profilepic} alt="profilepic" />
                 </div>
             </div>
@@ -109,8 +109,8 @@ const PaymentPage = ({ username }) => {
                 <div className='text-slate-400'>
                     {payments.length} Payments .   ₹{payments.reduce((a, b) => a + b.amount, 0)} raised 
                 </div>
-                <div className="payment flex gap-3 w-[80%] mt-11">
-                    <div className="supporters w-1/2 bg-slate-900 rounded-lg text-white p-10">
+                <div className="payment flex gap-3 w-[80%] mt-11 flex-col md:flex-row">
+                    <div className="supporters md:w-1/2 w-full bg-slate-900 rounded-lg text-white p-10">
                         <h2 className='text-2xl font-bold mb-5'>Top 10 Supporters</h2>
                         <ul className='mx-5 text-sm'>
                             {payments.length === 0 && <li>No payments yet </li>}
@@ -121,7 +121,7 @@ const PaymentPage = ({ username }) => {
                             })}
                         </ul>
                     </div>
-                    <div className="makePayment w-1/2 bg-slate-900 rounded-lg text-white p-10">
+                    <div className="makePayment md:w-1/2 w-full bg-slate-900 rounded-lg text-white p-10">
                         <h2 className='text-2xl font-bold my-5'>Make a Payment</h2>
                         <div className='flex gap-2 flex-col'>
                             {/* input for name and message   */}
